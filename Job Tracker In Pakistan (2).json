@@ -1,0 +1,510 @@
+{
+  "name": "Job Tracker In Pakistan",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2192,
+        48
+      ],
+      "id": "021d6d85-edce-48fb-90f9-e419ba56b9ca",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://jsearch.p.rapidapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "data analyst Pakistan "
+            },
+            {
+              "name": "num_pages",
+              "value": "5"
+            },
+            {
+              "name": "date_posted",
+              "value": "all"
+            },
+            {
+              "name": "country",
+              "value": "Pk"
+            },
+            {
+              "name": "new",
+              "value": "Business Analyst"
+            },
+            {
+              "name": "new",
+              "value": "Data Scientist"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Key",
+              "value": "7f0d781f90msh2d440f345aba542p1abfbfjsn9f88a7533ba9"
+            },
+            {
+              "name": "X-RapidAPI-Host",
+              "value": "jsearch.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1984,
+        48
+      ],
+      "id": "cc892552-9f1a-46d5-9d6c-c7912e16043e",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1568,
+        48
+      ],
+      "id": "d5768847-ee92-4e23-96f3-fb2e66593689",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5c02afd4-8ae3-4f80-87c9-83c41e3293de",
+              "name": "=job_title",
+              "value": "={{ $json.job_title }}",
+              "type": "string"
+            },
+            {
+              "id": "f588b09e-87bf-43c2-aa06-d105a51f38b7",
+              "name": "company",
+              "value": "={{ $json.employer_name }}",
+              "type": "string"
+            },
+            {
+              "id": "fb93ee1b-e706-434f-b7c3-fec69e2d76cd",
+              "name": "location",
+              "value": "={{ $json.job_location }}",
+              "type": "string"
+            },
+            {
+              "id": "1b3946e0-1bc5-4fec-bdad-0b60518d200b",
+              "name": "date_posted",
+              "value": "={{ $json.job_posted_at_datetime_utc.split('T')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "eeaf8e0d-1b6f-415d-a3a4-f0740fd0b8e0",
+              "name": "apply_link",
+              "value": "={{ $json.job_apply_link }}",
+              "type": "string"
+            },
+            {
+              "id": "a0cc8982-2514-41da-802d-cd55e37e6d76",
+              "name": "description",
+              "value": "={{ $json.job_description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1360,
+        32
+      ],
+      "id": "d867655e-1146-4957-ba3f-85b3598b2012",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8243ce8a-0b38-4ff1-ba2b-93ba89031b88",
+              "leftValue": "={{ $json.job_title }}",
+              "rightValue": "Analyst",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "610a09f7-eae8-40dd-a940-1e834ffe2d06",
+              "leftValue": "={{ $json.job_title }}",
+              "rightValue": "Data",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f099a075-6462-47a5-b6f0-57b74deca1d6",
+              "leftValue": "={{ $json.location }}",
+              "rightValue": "=Lahore",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "4c7fdc83-5a67-4c38-93d4-701a1bcf9ef7",
+              "leftValue": "={{ $json.location }}",
+              "rightValue": "Islamabad",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "1b5df58b-952e-4dfb-b202-af2a8ccfdb0d",
+              "leftValue": "={{ $json.location }}",
+              "rightValue": "Pakistan",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1152,
+        32
+      ],
+      "id": "dc00fe67-80e6-42f4-b66a-a0929c277f56",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "mehwishmushtaq2003@gmail.com",
+        "subject": "=📊 Daily Job Report — {{ $now.format('DD MMMM YYYY') }}",
+        "message": "=<h2>📊 Daily Job Market Report — Today</h2>\n<p>Your automated job tracker has collected new jobs!</p>\n<p><b>Date:</b>  {{ $json.date_collected }}\n\n<p><b>Jobs Found:</b> Check your Google Sheet for full details</p>\n<p><b>Top Skills in Demand Today:</b> Python, SQL, Web Scraping</p>\n<a href=\"YOUR_GOOGLE_SHEET_LINK\">👉 Open Google Sheet</a>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "086e887c-b423-45aa-a37b-96ebb2956bb3",
+      "name": "Send a message",
+      "webhookId": "cd58c5f0-e8ba-4ac2-a418-fe9a0ab52fdf",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "eyJlNj8fN61svr1L",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.first().json.data.map(job => ({ json: job }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1776,
+        48
+      ],
+      "id": "038e12a0-0866-4cdd-8fae-de7e30bfeffd",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n  const description = item.json.description || '';\n  \n  const skillKeywords = [\n    'Python', 'SQL', 'Excel', 'Power BI', 'Tableau',\n    'R', 'Java', 'JavaScript', 'Machine Learning',\n    'Deep Learning', 'Data Analysis', 'Web Scraping',\n    'Pandas', 'NumPy', 'TensorFlow', 'Statistics',\n    'Communication', 'Problem-solving', 'Leadership',\n    'Google Sheets', 'MongoDB', 'PostgreSQL', 'MySQL',\n    'Data Visualization', 'Reporting', 'Analytics',\n    'Microsoft Office', 'Data Cleaning', 'ETL'\n  ];\n\n  const foundSkills = skillKeywords.filter(skill =>\n    description.toLowerCase().includes(skill.toLowerCase())\n  );\n\n  return {\n    json: {\n      ...item.json,\n      required_skills: foundSkills.length > 0 \n        ? foundSkills.join(', ') \n        : 'Not specified',\n      date_collected: new Date().toISOString().split('T')[0]\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -944,
+        32
+      ],
+      "id": "95406fcf-fcb1-4f97-b458-e8a380ac984e",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "100v7nPX3GdxZT018PY4wm2YWWKMYCYA3mteAGbNDgUY",
+          "mode": "list",
+          "cachedResultName": "Jobs Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/100v7nPX3GdxZT018PY4wm2YWWKMYCYA3mteAGbNDgUY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/100v7nPX3GdxZT018PY4wm2YWWKMYCYA3mteAGbNDgUY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "job_title": "={{ $json.job_title }}",
+            "company": "={{ $json.company }}",
+            "location": "={{ $json.location }}",
+            "date_posted": "={{ $json.date_posted }}",
+            "apply_link": "={{ $json.apply_link }}",
+            "description": "={{ $json.description }}",
+            "required_skills": "={{ $json.required_skills }}",
+            "date_collected": "={{ $json.date_collected }}"
+          },
+          "matchingColumns": [
+            "apply_link"
+          ],
+          "schema": [
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date_posted",
+              "displayName": "date_posted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "apply_link",
+              "displayName": "apply_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "required_skills",
+              "displayName": "required_skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date_collected",
+              "displayName": "date_collected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -208,
+        16
+      ],
+      "id": "5b210140-9b2b-471b-be6e-9019fd98df6b",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "htdQCFDnPhJOcj8v",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3793ed73-c1d2-47c5-b7ce-545bb3fe6bbc",
+  "meta": {
+    "instanceId": "a1ee88db17b7ea4c7131f1a467cf6f71e34b6e198db738638d155bccd864eabe"
+  },
+  "id": "sll3QFswqxdgjoA9",
+  "tags": []
+}
